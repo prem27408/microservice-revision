@@ -4,12 +4,15 @@ import com.substring.quiz.quiz_service.collections.Quiz;
 import com.substring.quiz.quiz_service.dto.CategoryDto;
 import com.substring.quiz.quiz_service.dto.QuizDto;
 import com.substring.quiz.quiz_service.repositories.QuizRepository;
+import com.substring.quiz.quiz_service.services.CategoryFeignService;
 import com.substring.quiz.quiz_service.services.CategoryService;
 import com.substring.quiz.quiz_service.services.QuizService;
+import feign.FeignException;
 import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -28,10 +31,11 @@ public class QuizServiceImpl implements QuizService {
     private Logger logger= LoggerFactory.getLogger(QuizServiceImpl.class);
     private RestTemplate restTemplate;
     private final CategoryService categoryService;
+    private final CategoryFeignService categoryFeignService;
 
-    public QuizServiceImpl(CategoryService categoryService, ModelMapper modelMapper, QuizRepository quizRepository, RestTemplate restTemplate) {
+    public QuizServiceImpl(CategoryService categoryService, ModelMapper modelMapper, QuizRepository quizRepository, RestTemplate restTemplate,CategoryFeignService categoryFeignService) {
         this.categoryService = categoryService;
-
+        this.categoryFeignService=categoryFeignService;
         this.modelMapper = modelMapper;
         this.quizRepository = quizRepository;
         this.restTemplate = restTemplate;
@@ -153,7 +157,20 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public List<QuizDto> findByCategory(String categoryId) {
         List<Quiz> quizes = quizRepository.findByCategoryId(categoryId);
-        return quizes.stream().map(quize->modelMapper.map(quize,QuizDto.class)).toList();
+        return quizes.stream().map(quize->{
+
+            QuizDto quizDto = modelMapper.map(quize, QuizDto.class);
+            CategoryDto categoryDto =null;
+            //call category service to get category and put in category Dto
+            //using feign client
+            try {
+                 categoryDto = categoryFeignService.findById(quizDto.getCategoryId());
+            }catch (FeignException.NotFound ex){
+                  logger.error("Category not found");
+            }
+            quizDto.setCategoryDto(categoryDto);
+            return quizDto;
+                }).toList();
 
     }
 }

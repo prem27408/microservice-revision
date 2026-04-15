@@ -1,12 +1,14 @@
 package com.substring.quiz.quiz_service.config;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@EnableFeignClients
 public class ProjectConfig {
 
     @Bean

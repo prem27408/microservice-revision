@@ -14,14 +14,14 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceWebClientImpl implements CategoryService {
 
     private final RestTemplate restTemplate;
     private final WebClient webClient;
     private final ModelMapper modelMapper;
-    private final Logger logger= LoggerFactory.getLogger(CategoryServiceImpl.class);
+    private final Logger logger= LoggerFactory.getLogger(CategoryServiceWebClientImpl.class);
 
-    public CategoryServiceImpl(RestTemplate restTemplate, WebClient webClient,ModelMapper modelMapper) {
+    public CategoryServiceWebClientImpl(RestTemplate restTemplate, WebClient webClient, ModelMapper modelMapper) {
         this.restTemplate = restTemplate;
         this.webClient = webClient;
         this.modelMapper=modelMapper;
