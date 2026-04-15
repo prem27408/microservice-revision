@@ -4,15 +4,19 @@ import com.substring.quiz.quiz_service.collections.Quiz;
 import com.substring.quiz.quiz_service.dto.CategoryDto;
 import com.substring.quiz.quiz_service.dto.QuizDto;
 import com.substring.quiz.quiz_service.repositories.QuizRepository;
+import com.substring.quiz.quiz_service.services.CategoryService;
 import com.substring.quiz.quiz_service.services.QuizService;
 import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import javax.management.RuntimeErrorException;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,8 +27,10 @@ public class QuizServiceImpl implements QuizService {
     private ModelMapper modelMapper;
     private Logger logger= LoggerFactory.getLogger(QuizServiceImpl.class);
     private RestTemplate restTemplate;
+    private final CategoryService categoryService;
 
-    public QuizServiceImpl(ModelMapper modelMapper, QuizRepository quizRepository, RestTemplate restTemplate) {
+    public QuizServiceImpl(CategoryService categoryService, ModelMapper modelMapper, QuizRepository quizRepository, RestTemplate restTemplate) {
+        this.categoryService = categoryService;
 
         this.modelMapper = modelMapper;
         this.quizRepository = quizRepository;
@@ -90,7 +96,40 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public List<QuizDto> findAll() {
         List<Quiz> quizes = quizRepository.findAll();
-        return quizes.stream().map(quize->modelMapper.map(quize,QuizDto.class)).toList();
+
+        //getting category of all quiz
+        List<QuizDto> list = quizes.stream().map(quiz -> {
+
+            String categoryId = quiz.getCategoryId();
+            QuizDto quizDto = modelMapper.map(quiz, QuizDto.class);
+//            try {
+//                CategoryDto category = this.webClient
+//                        .get()
+//                        .uri("/api/v1/categories/{categoryId}", categoryId)
+//                        .retrieve()//to receive the value
+//                        .bodyToMono(CategoryDto.class)
+//                        .block();//blocking nature {here thread will not wait}{non reactive}
+//
+//
+//                quizDto.setCategoryDto(category);
+//
+//            }catch(WebClientResponseException ex){
+//
+//                if(ex.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+//                    logger.error("category not found");
+//                }else if(ex.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)){
+//                        logger.info("Internal Server error");
+//                }
+//                quizDto.setCategoryDto(null);
+//                ex.printStackTrace();
+//            }
+            CategoryDto categoryDto = this.categoryService.findById(categoryId);
+            quizDto.setCategoryDto(categoryDto);
+            return quizDto;
+
+        }).toList();
+
+        return list;
     }
 
     @Override
