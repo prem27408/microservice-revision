@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name="category-service",url="http://localhost:9091/api/v1/")
+//added eureka
+@FeignClient(name="CATEGORY-SERVICE"
+//        url="http://CATEGORY-SERVICE/api/v1/")
+)
 public interface CategoryFeignService {
 
     //get all categories

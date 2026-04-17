@@ -8,17 +8,11 @@ import com.substring.quiz.quiz_service.services.CategoryFeignService;
 import com.substring.quiz.quiz_service.services.CategoryService;
 import com.substring.quiz.quiz_service.services.QuizService;
 import feign.FeignException;
-import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +43,7 @@ public class QuizServiceImpl implements QuizService {
 
         // Step 1: Call Category Service (validate + fetch category)
         String categoryId = quizDto.getCategoryId();
-        String url = "http://localhost:9091/api/v1/categories/" + categoryId;
+        String url = "http://CATEGORY-SERVICE/api/v1/categories/" + categoryId;
 
         CategoryDto category = restTemplate.getForObject(url, CategoryDto.class);
 
@@ -127,6 +121,7 @@ public class QuizServiceImpl implements QuizService {
 //                quizDto.setCategoryDto(null);
 //                ex.printStackTrace();
 //            }
+            //web client
             CategoryDto categoryDto = this.categoryService.findById(categoryId);
             quizDto.setCategoryDto(categoryDto);
             return quizDto;
@@ -145,7 +140,7 @@ public class QuizServiceImpl implements QuizService {
         if (categoryId == null) {
             throw new RuntimeException("Category not found: " + categoryId);
         }
-        String url="http://localhost:9091/api/v1/categories"+categoryId;
+        String url="http://CATEGORY-SERVICE/api/v1/categories"+categoryId;
 
         logger.info(url);
         CategoryDto category = restTemplate.getForObject(url, CategoryDto.class);
@@ -162,8 +157,9 @@ public class QuizServiceImpl implements QuizService {
             QuizDto quizDto = modelMapper.map(quize, QuizDto.class);
             CategoryDto categoryDto =null;
             //call category service to get category and put in category Dto
-            //using feign client
+
             try {
+                //using feign client
                  categoryDto = categoryFeignService.findById(quizDto.getCategoryId());
             }catch (FeignException.NotFound ex){
                   logger.error("Category not found");

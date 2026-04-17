@@ -17,14 +17,17 @@ import java.util.List;
 public class CategoryServiceWebClientImpl implements CategoryService {
 
     private final RestTemplate restTemplate;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     private final ModelMapper modelMapper;
+    private final WebClient webClient;
     private final Logger logger= LoggerFactory.getLogger(CategoryServiceWebClientImpl.class);
 
-    public CategoryServiceWebClientImpl(RestTemplate restTemplate, WebClient webClient, ModelMapper modelMapper) {
+    public CategoryServiceWebClientImpl(RestTemplate restTemplate, WebClient.Builder webClientBuilder, ModelMapper modelMapper) {
         this.restTemplate = restTemplate;
-        this.webClient = webClient;
+        this.webClientBuilder = webClientBuilder;
         this.modelMapper=modelMapper;
+
+        this.webClient=webClientBuilder.baseUrl("http://CATEGORY-SERVICE").build();
     }
 
     @Override
