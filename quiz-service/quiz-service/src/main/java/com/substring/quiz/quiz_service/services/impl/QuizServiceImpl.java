@@ -43,7 +43,7 @@ public class QuizServiceImpl implements QuizService {
 
         // Step 1: Call Category Service (validate + fetch category)
         String categoryId = quizDto.getCategoryId();
-        String url = "http://CATEGORY-SERVICE/api/v1/categories/" + categoryId;
+        String url = "lb://CATEGORY-SERVICE/api/v1/categories/" + categoryId;
 
         CategoryDto category = restTemplate.getForObject(url, CategoryDto.class);
 
@@ -140,7 +140,8 @@ public class QuizServiceImpl implements QuizService {
         if (categoryId == null) {
             throw new RuntimeException("Category not found: " + categoryId);
         }
-        String url="http://CATEGORY-SERVICE/api/v1/categories"+categoryId;
+        //api gateway will call lb
+        String url="lb://CATEGORY-SERVICE/api/v1/categories"+categoryId;
 
         logger.info(url);
         CategoryDto category = restTemplate.getForObject(url, CategoryDto.class);

@@ -3,7 +3,6 @@ package com.substring.quiz.category.category_service.controllers;
 import com.substring.quiz.category.category_service.dto.CategoryDto;
 import com.substring.quiz.category.category_service.service.CategoryService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
