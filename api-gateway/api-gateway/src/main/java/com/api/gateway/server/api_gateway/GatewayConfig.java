@@ -5,8 +5,6 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-
 @Configuration
 public class GatewayConfig {
 

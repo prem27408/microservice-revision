@@ -2,6 +2,7 @@ package com.substring.quiz.category.category_service.controllers;
 
 import com.substring.quiz.category.category_service.dto.CategoryDto;
 import com.substring.quiz.category.category_service.service.CategoryService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,9 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+    @Value("${config.value}")
+    private String configValue;
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -50,5 +54,10 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getAllCategories(){
         return new ResponseEntity<>(this.categoryService.getAllCategories(),HttpStatus.OK);
+    }
+
+    @GetMapping("/config")
+    public String configValue(){
+           return configValue;
     }
 }
